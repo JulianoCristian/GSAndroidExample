@@ -17,6 +17,13 @@ public class GSService {
                 .send(r);
     }
 
+    public static void sendAuthenticationRequest(String username, String password, GSEventConsumer<GSResponseBuilder.AuthenticationResponse> r) {
+        GSAndroidPlatform.gs().getRequestBuilder().createAuthenticationRequest()
+                .setUserName(username)
+                .setPassword(password)
+                .send(r);
+    }
+
     public static void sendMatchMakingRequest(long skill, String shortCode, GSEventConsumer<GSResponseBuilder.MatchmakingResponse> r) {
         GSAndroidPlatform.gs().getRequestBuilder().createMatchmakingRequest()
                 .setSkill(skill)

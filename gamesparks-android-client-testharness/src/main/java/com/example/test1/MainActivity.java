@@ -1,11 +1,13 @@
 package com.example.test1;
 
+import android.util.Log;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.test1.models.GSConfig;
@@ -15,23 +17,35 @@ import com.gamesparks.sdk.android.GSAndroidPlatform;
 import com.gamesparks.sdk.api.autogen.GSMessageHandler.MatchFoundMessage;
 import com.gamesparks.sdk.api.autogen.GSResponseBuilder;
 
-import java.text.SimpleDateFormat;
+/**
+ * Stephen Callaghan <stephen.callaghan@gamesparks.com>
+ * Edited: 2018/01/17
+ * Created: 2018/01/16
+ */
 
 public class MainActivity extends AppCompatActivity
 {
+    private EditText _username;
+    private EditText _password;
+
     @Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		_username = (EditText) findViewById(R.id.editUsernameText);
+		_password = (EditText) findViewById(R.id.editPasswordText);
+
+		// Initialize GS
 		initGS(this, new GSConfig() {{ // Initialize GameSparks
             Skill = 0;
-            ApiKey = "";
-            ApiSecret = "";
-            ApiCredential = "";
             LiveMode = false;
             AutoUpdate = true;
             MatchShortCode = "Alpha";
+            ApiKey = BuildConfig.GAMESPARKS_API_KEY;
+            ApiSecret = BuildConfig.GAMESPARKS_API_SECRET;
+            ApiCredential = BuildConfig.GAMESPARKS_API_CREDENTIAL;
         }});
 	}
 
@@ -73,61 +87,62 @@ public class MainActivity extends AppCompatActivity
 		super.onPause();
 	}
 
-	private void initGS(Context context, final GSConfig config) {
+	public void OnAuthButtonClick(View v) {
+        Log.d("authenticate", "fired");
+        authenticate(_username.getText().toString(), _password.getText().toString());
+    }
 
+	public void authenticate(final String username, final String password) {
+        GSService.sendAuthenticationRequest(username, password, new GSEventConsumer<GSResponseBuilder.AuthenticationResponse>() {
+            @Override
+            public void onEvent(GSResponseBuilder.AuthenticationResponse authenticationResponse) {
+
+                if (!authenticationResponse.hasErrors()) {
+                    // successful authentication
+                    Log.d("Authentication", "Successful Auth");
+
+                } else {
+                    GSService.sendRegistrationRequest(username, password,  new GSEventConsumer<GSResponseBuilder.RegistrationResponse>() {
+                        @Override
+                        public void onEvent(GSResponseBuilder.RegistrationResponse registrationResponse) {
+
+                            if (registrationResponse.hasErrors()) return;
+                            Log.d("Registration", "Successful Auth");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+	private void initGS(Context context, final GSConfig config) {
+        // Initialize the SDK
 		GSAndroidPlatform.initialise(
 				context, config.ApiKey,
                 config.ApiSecret, config.ApiCredential,
 				config.LiveMode, config.AutoUpdate);
 
-		GSAndroidPlatform.gs().setOnAvailable(new GSEventConsumer<Boolean>() {
-			@Override
-			public void onEvent(Boolean available) {
+        // Setup GS Listeners
+        initGSListeners();
+	}
 
-				if (!available) addLog("GameSparks not available");
-                else {
+    private void initGSListeners() {
+        // On Gamesparks Available Listener
+        GSAndroidPlatform.gs().setOnAvailable(new GSEventConsumer<Boolean>() {
+            @Override
+            public void onEvent(Boolean available) {
 
-                    String name = getRegistrationName();
-                    GSService.sendRegistrationRequest(
-                            name, name,
-                            new GSEventConsumer<GSResponseBuilder.RegistrationResponse>() {
-                        @Override
-                        public void onEvent(GSResponseBuilder.RegistrationResponse registrationResponse) {
-
-                            GSService.sendMatchMakingRequest(config.Skill, config.MatchShortCode,
-                                new GSEventConsumer<GSResponseBuilder.MatchmakingResponse>() {
-                                    @Override
-                                    public void onEvent(GSResponseBuilder.MatchmakingResponse matchmakingResponse) {
-
-                                        if (matchmakingResponse.hasErrors()) addLog("Matchmaking Error");
-                                        else addLog("Matchmaking Success");
-                                    }
-                                });
-                            }
-                        });
-                    }
-				}
-			});
-
-
+                Log.d("fired", "fired");
+                //if (!available) addLog("GameSparks not available");
+                //else {
+            }
+        });
+        // On Match Found Listener
         GSAndroidPlatform.gs().getMessageHandler().setMatchFoundMessageListener(new GSEventConsumer<MatchFoundMessage>() {
             @Override
             public void onEvent(MatchFoundMessage matchFoundMessage) {
                 //matchFoundMessage.getAccessToken()
             }
         });
-	}
-
-    private String getRegistrationName() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").toString();
     }
-
-    private void addLog(String message) {
-	    //EditText e = (EditText) findViewById(R.id.editText1);
-        //e.setText(message + "\n" + e.getText().toString());
-    }
-
-    private Button _authBtn = (Button) findViewById(R.id.authButton);
-    private EditText _usernameTxt = (EditText) findViewById(R.id.editUsernameText);
-    private EditText _passwordTxt = (EditText) findViewById(R.id.editPasswordText);
 }

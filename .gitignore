@@ -27,3 +27,5 @@ import-summary.txt
 *.ipr
 *~
 *.swp
+
+keystore.properties

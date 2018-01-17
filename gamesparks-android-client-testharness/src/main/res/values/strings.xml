@@ -5,4 +5,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Authenticate -->
+    <string name="editUsernameText">Username</string>
+    <string name="editPasswordText">Password</string>
+    <string name="authButtonText">Authenticate</string>
 </resources>
