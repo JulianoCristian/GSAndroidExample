@@ -16,23 +16,28 @@ GameSparksApiSecret="<Api Secret given in the portal>"
 #### build.gradle Example ####
 ```text
 apply plugin: 'com.android.application'
+
 // Keystore secrets
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion '26.0.2'
+
     defaultConfig {
         applicationId "com.example.test1"
-        minSdkVersion 11
-        targetSdkVersion 25
+        minSdkVersion 15
+        targetSdkVersion 27
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+
         applicationVariants.all { variant ->
             variant.buildConfigField "String", "GAMESPARKS_API_KEY", keystoreProperties['GameSparksApiKey']
             variant.buildConfigField "String", "GAMESPARKS_API_SECRET", keystoreProperties['GameSparksApiSecret']
@@ -40,9 +45,10 @@ android {
         }
     }
 }
+
 dependencies {
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:support-v4:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.gamesparks.sdk:gamesparks-android-client-sdk:0.4.4'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile project(path: ':gamesparks-android-client-sdk')

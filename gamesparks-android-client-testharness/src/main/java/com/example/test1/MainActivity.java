@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		_username = (EditText) findViewById(R.id.editUsernameText);
-		_password = (EditText) findViewById(R.id.editPasswordText);
+		_username = findViewById(R.id.editUsernameText);
+		_password = findViewById(R.id.editPasswordText);
 
 		// Initialize GS
 		initGS(this, new GSConfig() {{ // Initialize GameSparks
