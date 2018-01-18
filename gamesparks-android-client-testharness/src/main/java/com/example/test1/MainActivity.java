@@ -20,7 +20,7 @@ import com.gamesparks.sdk.api.autogen.GSResponseBuilder;
 /**
  * Stephen Callaghan <stephen.callaghan@gamesparks.com>
  * Edited: 2018/01/17
- * Created: 2018/01/16
+ * Created: 2018/01/14
  */
 
 public class MainActivity extends AppCompatActivity
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 		_password = findViewById(R.id.editPasswordText);
 
 		// Initialize GS
-		initGS(this, new GSConfig() {{ // Initialize GameSparks
+		initGS(this, new GSConfig() {{
             Skill = 0;
             LiveMode = false;
             AutoUpdate = true;
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
     private void initGSListeners() {
-        // On Gamesparks Available Listener
+        // On Game Sparks Available Listener
         GSAndroidPlatform.gs().setOnAvailable(new GSEventConsumer<Boolean>() {
             @Override
             public void onEvent(Boolean available) {

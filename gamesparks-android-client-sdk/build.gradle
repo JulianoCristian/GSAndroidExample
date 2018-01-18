@@ -1,0 +1,75 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven'
+apply plugin: "maven-publish"
+
+group = 'com.gamesparks.sdk'
+version = '0.4.4'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 21
+        versionCode 1
+        versionName "0.4.4"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    //libraryVariants.all { variant ->
+    //    variant.outputs.each { output ->
+    //        def outputFile = output.outputFile
+    //        if (outputFile != null && outputFile.name.endsWith('release.aar')) {
+    //            def fileName = outputFile.name.replace("release.aar", defaultConfig.versionName + ".aar")
+                //output.outputFile = new File(outputFile.parent, fileName)
+    //        }
+    //    }
+    //}
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.gamesparks.sdk:gamesparks-java-sdk:0.4.4-SNAPSHOT'
+}
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+task generateJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task generateJavadocsJar(type: Jar) {
+    from generateJavadocs.destinationDir
+    classifier 'javadoc'
+}
+
+generateJavadocsJar.dependsOn generateJavadocs
+
+artifacts {
+    //archives generateJavadocsJar
+    archives generateSourcesJar
+}
+
+/*task createPom << {
+    pom {
+        project {
+            groupId groupId
+            artifactId artifactId
+            version version
+        }
+    }.writeTo("$buildDir/outputs/" + project.archivesBaseName + "-" + project.version + ".pom")
+}*/
+
+
